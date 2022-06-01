@@ -5,4 +5,4 @@
 3. Write down\paste the path to the file or drag the file to the program
 4. Press Enter 
 5. Wait
-6. The result will be saved to the program directory in file name: Result.txt
+6. The result will be saved to the program directory in the file name: Result.txt
