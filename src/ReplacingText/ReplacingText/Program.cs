@@ -173,7 +173,8 @@ namespace ReplacingText
                         tempRow = tempRow.Trim();
 
                         if (!(originalData.Equals(_tempOriginal) || tempRow.Equals(_tempNew)))
-                            _dataReplace.Add(originalData, tempRow);
+                            if (!_dataReplace.ContainsKey(originalData))
+                                _dataReplace.Add(originalData, tempRow);
                     }
                     else
                         tempRow += $"{row}\n";
