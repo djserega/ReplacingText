@@ -50,7 +50,7 @@ namespace ReplacingText
             }
 
             _startTime = DateTime.Now;
-            Console.WriteLine($"Начало: {_startTime::HH:mm:ss}\n");
+            Console.WriteLine($"Начало: {_startTime:HH:mm:ss}\n");
 
             using StreamReader reader = new(originalData.OpenRead());
             using StreamWriter writer = new("Result.txt");
@@ -59,9 +59,9 @@ namespace ReplacingText
 
             rows = ReadManyRows(reader, rows, _processedInWork);
 
-            rows = ProcessedFile(reader, writer, rows);
+            ProcessedFile(reader, writer, rows);
 
-            Console.WriteLine($"\n\nЗавершение: {DateTime.Now::HH:mm:ss}");
+            Console.WriteLine($"\n\nЗавершение: {DateTime.Now:HH:mm:ss}");
 
             reader.Close();
             reader.Dispose();
@@ -70,7 +70,7 @@ namespace ReplacingText
             writer.Close();
             writer.Dispose();
 
-            Console.WriteLine("\n\nДанные обработаны\n");
+            Console.WriteLine("\nДанные обработаны\n");
 
             Console.WriteLine("Файл результата:");
             Console.WriteLine(new FileInfo("Result.txt").FullName);
@@ -80,7 +80,7 @@ namespace ReplacingText
             Console.ReadKey();
         }
 
-        private static string ProcessedFile(StreamReader reader, StreamWriter writer, string rows)
+        private static void ProcessedFile(StreamReader reader, StreamWriter writer, string rows)
         {
             do
             {
@@ -99,15 +99,10 @@ namespace ReplacingText
 
                 for (int iRow = 0; iRow < countRowsToSave; iRow++)
                 {
-                    if (string.IsNullOrWhiteSpace(rows))
-                        break;
-                    else
-                    {
-                        int idFirstLine = rows.IndexOf("\n");
-                        writer.WriteLine(rows[..idFirstLine]);
+                    int idFirstLine = rows.IndexOf("\n");
+                    writer.WriteLine(rows[..idFirstLine]);
 
-                        rows = rows[(idFirstLine + 1)..];
-                    }
+                    rows = rows[(idFirstLine + 1)..];
                 }
 
                 countRowsToSave = Math.Max(countRowsToSave, _processedInWork / 2);
@@ -118,7 +113,10 @@ namespace ReplacingText
                     writer.Flush();
 
             } while (!reader.EndOfStream);
-            return rows;
+
+            writer.WriteLine(rows);
+
+            WriteStatus(true);
         }
 
         private static string ReadManyRows(StreamReader reader, string rows, int countRow)
@@ -137,9 +135,9 @@ namespace ReplacingText
             return rows;
         }
 
-        private static void WriteStatus()
+        private static void WriteStatus(bool showCurrentStatus = false)
         {
-            if (_processedLine % 1000 == 0)
+            if (_processedLine % 1000 == 0 || showCurrentStatus)
                 Console.Write($"\r{DateTime.Now - _startTime:dd\\:hh\\:mm\\:ss}" +
                     $"   -   {_statusText}{_processedLine}" +
                     $"   -   {_replacedText}{_replacedCount}");
