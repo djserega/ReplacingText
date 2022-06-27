@@ -32,6 +32,8 @@ namespace ReplacingText
 
         static void Main(string[] args)
         {
+            Logger.Inf("Starting");
+
             InitReplacesText();
 
             Console.WriteLine("Specify the path to the file:");
@@ -152,6 +154,8 @@ namespace ReplacingText
             string tempRow = "";
             string row;
 
+            int countReplacingTemplate = 0;
+
             do
             {
                 row = stream.ReadLine();
@@ -173,14 +177,21 @@ namespace ReplacingText
                         tempRow = tempRow.Trim();
 
                         if (!(originalData.Equals(_tempOriginal) || tempRow.Equals(_tempNew)))
+                        {
                             if (!_dataReplace.ContainsKey(originalData))
+                            {
                                 _dataReplace.Add(originalData, tempRow);
+                                countReplacingTemplate++;
+                            }
+                        }
                     }
                     else
                         tempRow += $"{row}\n";
                 }
 
             } while (row != null);
+
+            Logger.Inf($"Добавлено шаблонов к замене: {countReplacingTemplate}");
         }
     }
 }
