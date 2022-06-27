@@ -18,8 +18,8 @@ namespace ReplacingText
         private const string _tempOriginal = "<original>";
         private const string _tempNew = "<new>";
 
-        private const string _statusText = "Обработка строки: ";
-        private const string _replacedText = "Выполнено замен: ";
+        private const string _statusText = "String Processing: ";
+        private const string _replacedText = "Replacements completed: ";
 
         private static int _replacedCount = 0;
         private static int _processedLine = 0;
@@ -34,7 +34,7 @@ namespace ReplacingText
         {
             InitReplacesText();
 
-            Console.WriteLine("Укажите путь к файлу:");
+            Console.WriteLine("Specify the path to the file:");
             string path = Console.ReadLine();
 
             Console.WriteLine();
@@ -43,14 +43,14 @@ namespace ReplacingText
 
             if (!originalData.Exists)
             {
-                Console.WriteLine($"Не удалось получить доступ к файлу:\n{originalData.FullName}\n");
-                Console.WriteLine("Для выхода из приложения нажмите любую клавишу...");
+                Console.WriteLine($"Failed to get the access to the file:\n{originalData.FullName}\n");
+                Console.WriteLine("To quit the App press any keyboard key...");
                 Console.ReadKey();
                 return;
             }
 
             _startTime = DateTime.Now;
-            Console.WriteLine($"Начало: {_startTime:HH:mm:ss}\n");
+            Console.WriteLine($"Beginning: {_startTime:HH:mm:ss}\n");
 
             using StreamReader reader = new(originalData.OpenRead());
             using StreamWriter writer = new("Result.txt");
@@ -61,7 +61,7 @@ namespace ReplacingText
 
             ProcessedFile(reader, writer, rows);
 
-            Console.WriteLine($"\n\nЗавершение: {DateTime.Now:HH:mm:ss}");
+            Console.WriteLine($"\n\nEnding: {DateTime.Now:HH:mm:ss}");
 
             reader.Close();
             reader.Dispose();
@@ -70,13 +70,13 @@ namespace ReplacingText
             writer.Close();
             writer.Dispose();
 
-            Console.WriteLine("\nДанные обработаны\n");
+            Console.WriteLine("\nData processed\n");
 
-            Console.WriteLine("Файл результата:");
+            Console.WriteLine("Results file:");
             Console.WriteLine(new FileInfo("Result.txt").FullName);
             Console.WriteLine();
 
-            Console.WriteLine("Для выхода из приложения нажмите любую клавишу...");
+            Console.WriteLine("To quit the App press any keyboard key...");
             Console.ReadKey();
         }
 
