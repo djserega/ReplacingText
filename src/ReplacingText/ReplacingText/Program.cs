@@ -22,6 +22,7 @@ namespace ReplacingText
         private const string _replacedText = "Replacements completed: ";
 
         private static int _replacedCount = 0;
+        private static int _replacedCountPart = 0;
         private static int _processedLine = 0;
         private static DateTime _startTime;
 
@@ -36,26 +37,54 @@ namespace ReplacingText
 
             InitReplacesText();
 
-            Console.WriteLine("Specify the path to the file:");
-            string path = Console.ReadLine();
+            Console.WriteLine("Specify the path to the file or directory:");
+            string path = Console.ReadLine().Trim('"');
 
             Console.WriteLine();
 
-            FileInfo originalData = new(path.Trim('"'));
+            FileAttributes filePath = File.GetAttributes(path);
+            if (filePath.HasFlag(FileAttributes.Directory))
+            {
+                Logger.Inf($"Processing directory {path}");
+
+                DirectoryInfo directory = new(path);
+
+                foreach (FileInfo itemFile in directory.GetFiles())
+                {
+                    if (!itemFile.Name.EndsWith($"_processed{itemFile.Extension}"))
+                    {
+                        _replacedCountPart = 0;
+                        ReplacingFile(itemFile);
+                        _replacedCount += _replacedCountPart;
+                    }
+                }
+
+                Logger.Inf($"Directory processed. {_replacedText}{_replacedCount}");
+            }
+            else
+                ReplacingFile(new(path));
+
+            Console.WriteLine("To quit the App press any keyboard key...");
+            Console.ReadKey();
+        }
+
+        private static void ReplacingFile(FileInfo originalData)
+        {
+            Logger.Inf($"Processing file {originalData.FullName}");
 
             if (!originalData.Exists)
             {
                 Console.WriteLine($"Failed to get the access to the file:\n{originalData.FullName}\n");
-                Console.WriteLine("To quit the App press any keyboard key...");
-                Console.ReadKey();
                 return;
             }
 
             _startTime = DateTime.Now;
+
             Console.WriteLine($"Beginning: {_startTime:HH:mm:ss}\n");
 
+            string pathResult = $"{originalData.FullName}_processed{originalData.Extension}";
             using StreamReader reader = new(originalData.OpenRead());
-            using StreamWriter writer = new("Result.txt");
+            using StreamWriter writer = new(pathResult);
 
             string rows = "";
 
@@ -63,6 +92,7 @@ namespace ReplacingText
 
             ProcessedFile(reader, writer, rows);
 
+            Logger.Inf($"Ending: {_startTime:s}");
             Console.WriteLine($"\n\nEnding: {DateTime.Now:HH:mm:ss}");
 
             reader.Close();
@@ -75,11 +105,10 @@ namespace ReplacingText
             Console.WriteLine("\nData processed\n");
 
             Console.WriteLine("Results file:");
-            Console.WriteLine(new FileInfo("Result.txt").FullName);
+            Console.WriteLine(pathResult);
             Console.WriteLine();
 
-            Console.WriteLine("To quit the App press any keyboard key...");
-            Console.ReadKey();
+            Logger.Inf("Processed");
         }
 
         private static void ProcessedFile(StreamReader reader, StreamWriter writer, string rows)
@@ -91,7 +120,7 @@ namespace ReplacingText
                     if (rows.IndexOf(itemReplace.Key) > 0)
                     {
                         rows = rows.Replace(itemReplace.Key, itemReplace.Value);
-                        _replacedCount++;
+                        _replacedCountPart++;
                     }
                 }
 
@@ -142,7 +171,7 @@ namespace ReplacingText
             if (_processedLine % 1000 == 0 || showCurrentStatus)
                 Console.Write($"\r{DateTime.Now - _startTime:dd\\:hh\\:mm\\:ss}" +
                     $"   -   {_statusText}{_processedLine}" +
-                    $"   -   {_replacedText}{_replacedCount}");
+                    $"   -   {_replacedText}{_replacedCountPart}");
         }
 
         private static void InitReplacesText()
