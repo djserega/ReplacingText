@@ -92,7 +92,6 @@ namespace ReplacingText
 
             ProcessedFile(reader, writer, rows);
 
-            Logger.Inf($"Ending: {_startTime:s}");
             Console.WriteLine($"\n\nEnding: {DateTime.Now:HH:mm:ss}");
 
             reader.Close();
