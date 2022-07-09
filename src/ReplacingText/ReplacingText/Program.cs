@@ -23,11 +23,12 @@ namespace ReplacingText
 
         private static int _replacedCount = 0;
         private static int _replacedCountPart = 0;
-        private static int _processedLine = 0;
+        private static long _processedLine = 0;
+        private static long _processedLinePart = 0;
         private static DateTime _startTime;
 
         private const int _processedInWork = 100;
-        private const int _flushCoutn = 10000;
+        private const int _flushCount = 10000;
 
         #endregion
 
@@ -88,9 +89,13 @@ namespace ReplacingText
 
             string rows = "";
 
+            _processedLinePart = 0;
+
             rows = ReadManyRows(reader, rows, _processedInWork);
 
             ProcessedFile(reader, writer, rows);
+
+            _processedLine += _processedLinePart;
 
             Console.WriteLine($"\n\nEnding: {DateTime.Now:HH:mm:ss}");
 
@@ -139,7 +144,7 @@ namespace ReplacingText
 
                 rows = ReadManyRows(reader, rows, countRowsToSave);
 
-                if (_processedLine % _flushCoutn == 0)
+                if (_processedLinePart % _flushCount == 0)
                     writer.Flush();
 
             } while (!reader.EndOfStream);
@@ -154,7 +159,7 @@ namespace ReplacingText
             for (int i = 0; i < countRow; i++)
             {
                 rows += $"{reader.ReadLine()}\n";
-                _processedLine++;
+                _processedLinePart++;
 
                 WriteStatus();
 
@@ -167,9 +172,9 @@ namespace ReplacingText
 
         private static void WriteStatus(bool showCurrentStatus = false)
         {
-            if (_processedLine % 1000 == 0 || showCurrentStatus)
+            if (_processedLinePart % 1000 == 0 || showCurrentStatus)
                 Console.Write($"\r{DateTime.Now - _startTime:dd\\:hh\\:mm\\:ss}" +
-                    $"   -   {_statusText}{_processedLine}" +
+                    $"   -   {_statusText}{_processedLinePart}" +
                     $"   -   {_replacedText}{_replacedCountPart}");
         }
 
