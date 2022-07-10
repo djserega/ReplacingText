@@ -224,7 +224,7 @@ namespace ReplacingText
 
             } while (row != null);
 
-            Logger.Inf($"Добавлено шаблонов к замене: {countReplacingTemplate}");
+            Logger.Inf($"Added replacement templates: {countReplacingTemplate}");
         }
     }
 }
