@@ -43,27 +43,38 @@ namespace ReplacingText
 
             Console.WriteLine();
 
-            FileAttributes filePath = File.GetAttributes(path);
-            if (filePath.HasFlag(FileAttributes.Directory))
+            if (File.Exists(path) || Directory.Exists(path))
             {
-                Logger.Inf($"Processing directory {path}");
-
-                DirectoryInfo directory = new(path);
-
-                foreach (FileInfo itemFile in directory.GetFiles())
+                FileAttributes filePath = File.GetAttributes(path);
+                if (filePath.HasFlag(FileAttributes.Directory))
                 {
-                    if (!itemFile.Name.EndsWith($"_processed{itemFile.Extension}"))
-                    {
-                        _replacedCountPart = 0;
-                        ReplacingFile(itemFile);
-                        _replacedCount += _replacedCountPart;
-                    }
-                }
+                    Logger.Inf($"Processing directory {path}");
 
-                Logger.Inf($"Directory processed. {_replacedText}{_replacedCount}");
+                    DirectoryInfo directory = new(path);
+
+                    foreach (FileInfo itemFile in directory.GetFiles())
+                    {
+                        if (!itemFile.Name.EndsWith($"_processed{itemFile.Extension}"))
+                        {
+                            Console.WriteLine($"Processing file: {itemFile.Name}\n");
+
+                            _replacedCountPart = 0;
+                            ReplacingFile(itemFile);
+                            _replacedCount += _replacedCountPart;
+
+                        }
+                    }
+
+                    Logger.Inf($"Directory processed. {_replacedText}{_replacedCount}");
+                }
+                else
+                    ReplacingFile(new(path));
             }
             else
-                ReplacingFile(new(path));
+            {
+                Console.WriteLine("File or directory does not exist");
+                Console.WriteLine();
+            }
 
             Console.WriteLine("To quit the App press any keyboard key...");
             Console.ReadKey();
@@ -107,7 +118,7 @@ namespace ReplacingText
             writer.Dispose();
 
             Console.WriteLine("\nData processed\n");
-
+            
             Console.WriteLine("Results file:");
             Console.WriteLine(pathResult);
             Console.WriteLine();
