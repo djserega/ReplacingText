@@ -8,6 +8,7 @@ namespace ReplacingText
     internal class Program
     {
         private readonly static Dictionary<string, string> _dataReplace = new();
+        private static bool _deletingSource = false;
 
         #region Fields
 
@@ -34,6 +35,27 @@ namespace ReplacingText
 
         static void Main(string[] args)
         {
+
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Special args:\n" +
+                    "--delete source : deleting the source file after ends of process");
+                Console.WriteLine();
+            }
+            else
+            {
+                foreach (string item in args)
+                {
+                    if (item == "--delete source")
+                    {
+                        Console.WriteLine("INF: Deleting source is enabled");
+                        _deletingSource = true;
+                    }
+                }
+
+                Console.WriteLine();
+            }
+
             Logger.Inf("Starting");
 
             InitReplacesText();
@@ -118,10 +140,28 @@ namespace ReplacingText
             writer.Dispose();
 
             Console.WriteLine("\nData processed\n");
-            
+
             Console.WriteLine("Results file:");
             Console.WriteLine(pathResult);
             Console.WriteLine();
+
+            if (_deletingSource)
+            {
+
+                try
+                {
+                    FileInfo fileInfoSource = new(originalData.FullName);
+                    fileInfoSource.Delete();
+
+                    Console.WriteLine("Original file is deleted");
+                    Console.WriteLine();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"ERR: Could not deleting source file: {originalData.Name}");
+                    Console.WriteLine();
+                }
+            }
 
             Logger.Inf("Processed");
         }
