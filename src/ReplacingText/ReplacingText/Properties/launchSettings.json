@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ReplacingText": {
+      "commandName": "Project",
+      "commandLineArgs": "--delete source --multiple"
+    }
+  }
+}

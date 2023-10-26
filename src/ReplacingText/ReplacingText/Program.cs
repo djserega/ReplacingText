@@ -9,6 +9,7 @@ namespace ReplacingText
     {
         private readonly static Dictionary<string, string> _dataReplace = new();
         private static bool _deletingSource = false;
+        private static bool _multipleProcessing = false;
 
         #region Fields
 
@@ -39,7 +40,8 @@ namespace ReplacingText
             if (args.Length == 0)
             {
                 Console.WriteLine("Special args:\n" +
-                    "--delete source : deleting the source file after ends of process");
+                    "--delete source : deleting the source file after ends of process\n" +
+                    "--multiple : do not close app after processing data");
                 Console.WriteLine();
             }
             else
@@ -51,6 +53,11 @@ namespace ReplacingText
                         Console.WriteLine("INF: Deleting source is enabled");
                         _deletingSource = true;
                     }
+                    else if (item == "--multiple")
+                    {
+                        Console.WriteLine("INF: Multiple processing is enabled");
+                        _multipleProcessing = true;
+                    }
                 }
 
                 Console.WriteLine();
@@ -60,6 +67,31 @@ namespace ReplacingText
 
             InitReplacesText();
 
+            if (_multipleProcessing)
+            {
+                ConsoleKey userAnswer = default;
+
+                do
+                {
+                    ProcessingData();
+
+                    Console.WriteLine("\nNext process - press 'y'.\nPress any key to break processing");
+
+                    userAnswer = Console.ReadKey().Key;
+
+                    Console.WriteLine();
+
+                } while (userAnswer == ConsoleKey.Y);
+            }
+            else
+                ProcessingData();
+
+            Console.WriteLine("Press any key to close this window...");
+            Console.ReadKey();
+        }
+
+        private static void ProcessingData()
+        {
             Console.WriteLine("Specify the path to the file or directory:");
             string path = Console.ReadLine().Trim('"');
 
@@ -97,9 +129,6 @@ namespace ReplacingText
                 Console.WriteLine("File or directory does not exist");
                 Console.WriteLine();
             }
-
-            Console.WriteLine("To quit the App press any keyboard key...");
-            Console.ReadKey();
         }
 
         private static void ReplacingFile(FileInfo originalData)
