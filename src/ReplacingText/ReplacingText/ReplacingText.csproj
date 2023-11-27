@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Replacing text</AssemblyName>
 	<Version>1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="Terminal.Gui" Version="1.14.1" />
   </ItemGroup>
 
   <ItemGroup>
