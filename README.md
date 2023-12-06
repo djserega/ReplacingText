@@ -6,3 +6,5 @@
 4. Press Enter 
 5. Wait
 6. The result will be saved to directory in the file name with postfix: "_processed"
+
+![](https://github.com/djserega/ReplacingText/blob/main/preview.gif)
